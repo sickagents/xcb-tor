@@ -33,7 +33,12 @@ POOL_PORT = "3333"
 WALLET_ADDRESS = "CB...your_wallet"
 THREADS = None  # Auto-detect
 TOR_PORT = 9050
+USE_WORKER = False  # False = all VPS combined, True = unique worker per VPS
 ```
+
+**Worker Configuration:**
+- `USE_WORKER = False` (default): All VPS mining to same wallet show as **one combined worker** in pool dashboard. Total hashrate from all VPS is aggregated.
+- `USE_WORKER = True`: Each VPS gets **unique random worker name**. You can see hashrate per VPS separately in pool dashboard.
 
 ---
 

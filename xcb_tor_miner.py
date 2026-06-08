@@ -99,19 +99,25 @@ def start_tor_proxy(local_port=9050):
     
     return tor_process
 
-def start_mining(pool_host, pool_port, wallet_address, threads=None, tor_port=9050):
+def start_mining(pool_host, pool_port, wallet_address, threads=None, tor_port=9050, use_worker=False):
     """Start mining with CoreMiner through Tor proxy"""
     if not threads:
         threads = os.cpu_count() or 4
     
-    worker_name = generate_worker_name()
     pool_url = f"socks5://127.0.0.1:{tor_port}@{pool_host}:{pool_port}"
-    worker_id = f"{wallet_address}.{worker_name}"
+    
+    if use_worker:
+        worker_name = generate_worker_name()
+        worker_id = f"{wallet_address}.{worker_name}"
+        worker_display = worker_name
+    else:
+        worker_id = wallet_address
+        worker_display = "None (combined hashrate)"
     
     print(f"\n{'='*60}")
     print(f"Starting XCB Mining via Tor")
     print(f"{'='*60}")
-    print(f"Worker Name: {worker_name}")
+    print(f"Worker Name: {worker_display}")
     print(f"Pool: {pool_host}:{pool_port}")
     print(f"Tor Proxy: 127.0.0.1:{tor_port}")
     print(f"Wallet: {wallet_address}")
@@ -137,6 +143,7 @@ def main():
     WALLET_ADDRESS = "CB..."              # Your Corecoin wallet address
     THREADS = None                        # None = auto-detect all cores
     TOR_PORT = 9050                       # Local Tor SOCKS5 port
+    USE_WORKER = False                    # False = all VPS combined into one worker, True = unique worker per VPS
     
     # Validate configuration
     if WALLET_ADDRESS == "CB...":
@@ -161,7 +168,7 @@ def main():
     
     print("\nStep 5: Starting mining...")
     try:
-        start_mining(POOL_HOST, POOL_PORT, WALLET_ADDRESS, THREADS, TOR_PORT)
+        start_mining(POOL_HOST, POOL_PORT, WALLET_ADDRESS, THREADS, TOR_PORT, USE_WORKER)
     finally:
         # Cleanup: kill Tor process
         print("\nStopping Tor proxy...")
